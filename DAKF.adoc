@@ -1,4 +1,0 @@
-= Discrete Kalman Filter
-
-We consider a stochastic linear dynamic system :
-asciimath:[x=Ax]
