@@ -1,0 +1,125 @@
+% Configuration
+
+\documentclass[a4paper]{article}
+
+\linespread{1.1}
+
+\usepackage[utf8]{inputenc} 
+\usepackage[T1]{fontenc}
+\usepackage[francais]{babel}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{hyperref}
+\usepackage[margin=1.8cm]{geometry}
+\usepackage{pgf,tikz}
+\usepackage{mathrsfs}
+\usetikzlibrary{arrows}
+
+
+% Structure
+
+\newcounter{c}
+\newcounter{d}
+\newcounter{r}
+\newcounter{e}
+
+\newcommand{\defi}{\subparagraph{D\'efinition \arabic{c}.\arabic{d} :}\stepcounter{d}}
+\newcommand{\prop}{\subparagraph{Proposition \arabic{c}.\arabic{r} :}\stepcounter{r}}
+\newcommand{\thm}{\subparagraph{Th\'eor\`eme \arabic{c}.\arabic{r} :}\stepcounter{r}}
+\newcommand{\demo}{\subparagraph{D\'emonstration}}
+\newcommand{\cor}{\subparagraph{Corollaire \arabic{c}.\arabic{r} :}\stepcounter{r}}
+\newcommand{\lem}{\subparagraph{Lemme \arabic{c}.\arabic{r} :}\stepcounter{r}}
+\newcommand{\rem}{\subparagraph{Remarque :}}
+\newcommand{\chapitre}[1]{\stepcounter{c}\setcounter{e}{0}\setcounter{d}{0}\setcounter{r}{0}\noindent\textbf{\Large#1}\\}
+\newcommand{\eq}[1]{\stepcounter{e}\begin{equation}#1\tag{\arabic{c}.\arabic{e}}\end{equation}}
+
+% Notations
+
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\E}[1]{\mathbb E\left(#1\right)}
+\newcommand{\sph}{\mathbb{S}}
+\newcommand{\p}{{\cal{P}}}
+\newcommand{\fsp}{{\cal{F}}}
+\newcommand*{\qed}{\hfill\ensuremath{\square}}
+\newcommand{\x}{\mathbf x}
+\newcommand{\y}{\mathbf y}
+\newcommand{\e}{\mathbf e}
+\newcommand{\scal}[2]{\langle#1,#2\rangle}
+\newcommand{\trans}{^\text{T}\!}
+
+\newcommand{\nor}[2]{{\cal N}(#1,#2)}
+\newcommand{\mat}[2]{{\cal M}_{#1\times#2}(\R)}
+
+\newcommand{\bu}{\mathbf u}
+\newcommand{\bv}{\mathbf v}
+
+\date{}
+\author{Philippe Ricka}
+\title{}
+
+\newcommand{\saut}{\vspace{0.5em}}
+
+\begin{document}
+
+%\maketitle
+
+\begin{center}\huge Thermal fin\end{center}
+
+\bigskip
+
+\chapitre{Finite Element Approximation}
+
+
+\paragraph{(a)}We consider the five PDEs :
+
+$$-k^i\Delta\bu^i=0,i=0,...,4$$
+
+
+\noindent we wish to write the variational formulation. We apply rightly the inner product by any standard test function $\bv\in X^e$ then integrate on $\Omega^i$ for each $i=0,...,4$ before taking the sum of these five terms :
+
+$$-\sum_{i=0}^4k^i\int_{\Omega^i}\Delta\bu^i\cdot\bv=0$$
+
+
+Considering $k^0=1$ and integrating by parts, we get :
+
+$$\sum_{i=0}^4k^i\left[\int_{\Omega^i}\nabla\bu^i\cdot\nabla\bv-\int_{\Gamma^i}(\nabla\bu^i\cdot\mathbf n^i)\cdot\bv\right]=0$$
+
+
+But since $\Gamma^0=\Gamma_{root}\cup\Gamma^0_{int}\cup\Gamma^0_{ext}$ and $\Gamma^i=\Gamma^i_{int}\cup\Gamma^i_{ext}$ for $i=0,...,4$, we may write :
+
+$$\begin{array}{rl}0=&\displaystyle\sum_{i=0}^4k^i\int_{\Omega^i}\nabla\bu^i\cdot\nabla\bv-\sum_{i=1}^4k^i\left[\int_{\Gamma^i_{int}}(\nabla\bu^i\cdot\mathbf n^i)\cdot\bv+\int_{\Gamma_{ext}^i}(\nabla\bu^i\cdot\mathbf n^i)\cdot\bv\right]\\
+&\\
+&\displaystyle-k^0\left[\int_{\Gamma_{root}}(\nabla\bu^0\cdot\mathbf n^0)\cdot\bv+\int_{\Gamma^0_{ext}}(\nabla\bu^0\cdot\mathbf n^0)\cdot\bv\right]-k^0\int_{\Gamma^0_{int}}(\nabla\bu^0\cdot\mathbf n^0)\cdot\bv\\
+&\\
+=&\displaystyle\sum_{i=0}^4k^i\int_{\Omega^i}\nabla\bu^i\cdot\nabla\bv-\left[\sum_{i=1}^4k^i\int_{\Gamma^i_{int}}(\nabla\bu^i\cdot\mathbf n^i)\cdot\bv+\int_{\Gamma^0_{int}}(\nabla\bu^0\cdot\mathbf n^0)\cdot\bv\right]\\
+&\\
+&\displaystyle-\sum_{i=0}^4k^i\int_{\Gamma^i_{ext}}(\nabla\bu^i\cdot\mathbf n^i)\cdot\bv-\int_{\Gamma_{root}}(\nabla\bu^0\cdot\mathbf n^0)\cdot\bv
+\end{array}$$
+
+
+We now use the facts :
+$$\begin{array}{ll}
+\displaystyle\bigcup_{i=1}^4\Gamma^i_{int}=\Gamma^0_{int}&\\
+\begin{array}{l}\mathbf n^i=-\mathbf n^0\\
+-\nabla\bu^0\cdot\mathbf n^i=-k^i(\nabla\bu^i\cdot\mathbf n^i)\\
+\end{array}&\text{ on }\Gamma^i_{int}, i=1,...,4\\
+-k^i(\nabla\bu^i\cdot\mathbf n^i)=\text{Bi}~\bu^i&\text{ on }\Gamma_{ext}\\
+\end{array}$$
+
+yielding :
+
+$$\begin{array}{rl}0=&\displaystyle\sum_{i=0}^4k^i\int_{\Omega^i}\nabla\bu^i\cdot\nabla\bv-[0]+\text{Bi}~\sum_{i=0}^4\int_{\Gamma^i_{ext}}\bu^i\cdot\bv-\int_{\Gamma_{root}}\bv
+\end{array}$$
+
+
+
+
+
+\end{document}
