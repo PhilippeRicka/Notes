@@ -7,7 +7,7 @@
 \usepackage[utf8]{inputenc} 
 \usepackage[T1]{fontenc}
 \usepackage[francais]{babel}
-\usepackage{amsmath}
+\usepackage{amsmath,amssymb}
 \usepackage{amsfonts}
 \usepackage{graphicx}
 \usepackage{lmodern}
@@ -33,7 +33,7 @@
 \newcommand{\cor}{\subparagraph{Corollaire \arabic{c}.\arabic{r} :}\stepcounter{r}}
 \newcommand{\lem}{\subparagraph{Lemme \arabic{c}.\arabic{r} :}\stepcounter{r}}
 \newcommand{\rem}{\subparagraph{Remarque :}}
-\newcommand{\chapitre}[1]{\stepcounter{c}\setcounter{e}{0}\setcounter{d}{0}\setcounter{r}{0}\noindent\textbf{\Large#1}\\}
+\newcommand{\chapitre}[1]{\stepcounter{c}\setcounter{e}{0}\setcounter{d}{0}\setcounter{r}{0}\bigskip\noindent\textbf{\Large\Roman{c} - #1}\\}
 \newcommand{\eq}[1]{\stepcounter{e}\begin{equation}#1\tag{\arabic{c}.\arabic{e}}\end{equation}}
 
 % Notations
@@ -53,12 +53,17 @@
 \newcommand{\e}{\mathbf e}
 \newcommand{\scal}[2]{\langle#1,#2\rangle}
 \newcommand{\trans}{^\text{T}\!}
+\newcommand{\vertiii}[1]{{\left\vert\kern-0.25ex\left\vert\kern-0.25ex\left\vert #1 
+    \right\vert\kern-0.25ex\right\vert\kern-0.25ex\right\vert}}
 
 \newcommand{\nor}[2]{{\cal N}(#1,#2)}
 \newcommand{\mat}[2]{{\cal M}_{#1\times#2}(\R)}
 
 \newcommand{\bu}{\mathbf u}
 \newcommand{\bv}{\mathbf v}
+\newcommand{\bw}{\mathbf w}
+
+\newcommand{\argmin}{\text{argmin}}
 
 \date{}
 \author{Philippe Ricka}
@@ -118,8 +123,164 @@ yielding :
 $$\begin{array}{rl}0=&\displaystyle\sum_{i=0}^4k^i\int_{\Omega^i}\nabla\bu^i\cdot\nabla\bv-[0]+\text{Bi}~\sum_{i=0}^4\int_{\Gamma^i_{ext}}\bu^i\cdot\bv-\int_{\Gamma_{root}}\bv
 \end{array}$$
 
+or equivalently :
+
+$$\sum_{i=0}^4k^i\int_{\Omega^i}\nabla\bu^i\cdot\bv+\text{Bi}\int_{\partial\Omega\backslash\Gamma_{root}}\bu^i\cdot\bv=\int_{\Gamma_{root}}\bv$$
+
+It is easy to see that it is written in the form $a(\bu,\bv;\mu)=l(\bv;\mu)$ where :
+
+$$a(\mathbf w,\bv;\mu)=\sum_{i=0}^4k^i\int_{\Omega^i}\nabla\mathbf w^i\cdot\bv+\text{Bi}\int_{\partial\Omega\backslash\Gamma_{root}}\mathbf w^i\cdot\bv~\text{ and }~l(\bv;\mu)=\int_{\Gamma_{root}}\bv$$
+
+are respectively a bilinear symmetric form and a linear form. We conclude by saying that $\bu^e(\mu)$ verifies : $$a(\bu^e(\mu),v;\mu)=l(v;\mu)~,~\forall\bv\in X^e$$
 
 
+\paragraph{(b)}Consider :
+
+$$J(\mathbf w)=\frac12a(\mathbf w,\mathbf w;\mu)-l(\mathbf w;\mu)$$ an let us look for its differential. It is the linear part of the following map :
+
+$$\begin{array}{rcl}
+X^e&\longrightarrow&\R\\
+h&\longmapsto&J(\bw+h)
+\end{array}$$
+
+We compute :
+
+$$\begin{array}{rl}
+J(\bw+h)=&\displaystyle\frac12a(\bw+h,\bw+h;\mu)-l(\bw+h;\mu)\\
+&\\
+=&\displaystyle\frac12\left(a(\bw,\bw;\mu)+a(h,h;\mu)+a(\bw,h;\mu)+a(h,\bw;\mu)\right)-l(\bw;\mu)-l(h;\mu)\\
+&\\
+\text{since $a$ is bilinear  }~\hfill=&\displaystyle\left[\frac12(a(\bw,\bw;\mu)+a(h,h;\mu))-l(\bw;\mu)\right]+\left[a(\bw,h;\mu)-l(h;\mu)\right]\\
+\end{array}$$
+
+thus the differential of $J$ at $\bw$ is $D_\bw J(h)=a(\bw,h;\mu)-l(h;\mu)$. But according to \textbf{(a)}, for all $bv\in X^e$, we have : $a(\bu^e(\mu),\bv;\mu)=l(\bv;\mu)$, or equivalently $J(\bu^e(\mu))\equiv0$. Since $a(h,h;\mu)=\vertiii h_\mu^2\geqslant0$ for all $h\in X^e$, $\bu^e(\mu)$ is a local minimum for $J$. Since $\bu^e(\mu)$ is the only argument vanishing $D_\cdot J$, it is a global minimum for $J$.
+
+\chapitre{Reduced-basis approximation}
+
+\paragraph{(a)}By definition of $\bu_N\in W_N$, we have for all $\bw_N\in W_N$:
+
+$$J(\bu_N)=\frac12a(\bu_N,\bu_N;\mu)-l(\bu_N;\mu)\leqslant\frac12a(\bw_N,\bw_N;\mu)-l(\bw_N;\mu)=J(\bw_N)$$
+
+But :
+\begin{itemize}
+\item$l(\bu_N;\mu)=a(\bu(\mu),\bu_N;\mu)$
+\item$l(\bw_N;\mu)=a(\bu(\mu),\bw_N;\mu)$
+\end{itemize}
+
+thus :
+
+$$\begin{array}{rcl}
+\displaystyle\frac12a(\bu_N,\bu_N;\mu)-a(\bu(\mu),\bu_N;\mu)&\leqslant&\displaystyle\frac12a(\bw_N,\bw_N;\mu)-a(\bu(\mu),\bw_N;\mu)\\
+&&\\
+a(\bu(\mu)-\bu_N,\bu(\mu)-\bu_N;\mu)&\leqslant&a(\bu(\mu)-\bw_N,\bu(\mu)-\bw_N;\mu)\\
+&&\\
+\vertiii{\bu(\mu)-\bu_N}_\mu&\leqslant&\vertiii{\bu(\mu)-\bw_N}_\mu
+\end{array}$$
+
+\paragraph{(b)}We have respectively :
+
+$$\left\{\begin{array}{l}
+T_{root N}(\mu)=l(\bu_N(\mu);\mu)\\
+T_{root}(\mu)=l(\bu(\mu);\mu)
+\end{array}\right.$$
+
+thus :
+
+$$\begin{array}{rl}
+T_{root}(\mu)-T_{rootN}(\mu)=&l(\bu(\mu);\mu)-l(\bu_N(\mu);\mu)\\
+=&l(\bu{\mu};\mu)-l(\bu_N(\mu);\mu)+l(\bu_N(\mu);\mu)-l(\bu_N(\mu);\mu)\\
+=&a(\bu(\mu),\bu(\mu);\mu)-a(\bu(\mu),\bu_N(\mu);\mu)+a(\bu_N(\mu),\bu_N(\mu);\mu)-a(\bu_N(\mu),\bu(\mu);\mu)\\
+=&a(\bu(\mu),\bu(\mu);\mu)-2a(\bu(\mu),\bu_N(\mu);\mu)+a(\bu_N(\mu),\bu_N(\mu);\mu)\\
+=&a(\bu(\mu)-\bu_N(\mu),\bu(\mu)-\bu_N(\mu);\mu)\\
+=&\vertiii{\bu(\mu)-\bu_N(\mu)}_\mu^2
+\end{array}$$
+
+\paragraph{(c)}We know that for all $\bw_N\in W_N$, the following holds :
+
+$$a(\bu_N(\mu),\bw_N;\mu)=l(\bw_N;\mu)$$
+
+Moreover, $\bu_N(\mu)=\displaystyle\sum_{i=1}^N\underline{\bu}_N^ia\xi_i$ so we can write for all $j=1,...,N$ :
+
+$$a(\bu_N(\mu),\xi_j;\mu)=\sum_{i=1}^N\underline{\bu}_N^ia(\xi_i,\xi_j;\mu)=l(\xi_j;\mu)$$
+
+We build the matrices $\underline A_N(\mu), \underline F_N(\mu)$ and $\underline L_N$ whose coefficients are defined by : 
+
+$$\underline{A}_N(\mu)_{ij}=a(\xi_i,\xi_j;\mu)\text{ and }\underline{F}_N(\mu)_j=l(\xi_j;\mu)\text{ and }\underline L_N^i=\int_{\Gamma_{root}}\xi_i$$
+
+such that : 
+
+$$\underline A_N(\mu)\cdot\underline\bu_N(\mu)=\underline F_N(\mu)$$
+
+$$T_{rootN}(\mu)=\int_{\Gamma_{root}}\bu_N(\mu)=\sum_{i=1}^N\underline\bu_N(\mu)\int_{\Gamma_{root}}\xi_i=\underline L_N^T\cdot\underline\bu_N$$
+
+Packing the shapshots' components into an $\mathcal N\times N$ matrix $Z$ yields :
+
+$$\underline A_N(\mu)=Z^T\cdot\underline A_\mathcal{N}(\mu)\cdot Z\text{ and }\underline F_N(\mu)=Z^T\cdot\underline F_\mathcal{N}(\mu)\text{ and }\underline L_N=Z^T\cdot\underline L_\mathcal N$$
+
+\paragraph{(d)}We know that :
+
+$$a(\bw,\bv;\mu)=\sum_{i=0}^4k^i\int_{\Omega^i}\nabla\bw\cdot\nabla\bv+\text{Bi}\int_{\partial\Omega\backslash\Gamma_{root}}\bw\bv=\sum_{i=1}^5\mu_i\int_{\Omega^{i-1}}\nabla\bw\cdot\nabla\bv+\mu_6\int_{\partial\Omega\backslash\Gamma_{root}}\bw\bv$$
+
+Let :
+
+$$\begin{array}{llr}
+\theta^q(\mu)=\mu_q,&a^q(\bw,\bv)=\int_{\Omega^{q-1}}\nabla\bw\cdot\nabla\bv,&q=1,...,5\\
+\theta^6(\mu)=\mu_6,&a^6(\bw,\bv)=\int_{\partial\Omega\backslash\Gamma_{root}}\bw\bv&
+\end{array}$$
+
+in such a way we can rewrite :
+
+$$a(\bw,\bv;\mu)=\sum_{q=1}^6\theta^q(\mu)a^q(\bw,\bv)~,~\forall\bw,\bv\in X,~\forall\mu\in\mathcal D.$$
+
+We now build the matrices $\underline A^{\mathcal Nq}\in\mat{\mathcal N}{\mathcal N}$ and $\underline A^q_N\in\mat NN$ whose coefficients are :
+
+$$\underline A^{\mathcal Nq}_{ij}=a^q(\varphi_i,\varphi_j)\text{ and }\underline A^q_{Nij}=a^q(\xi_i,\xi_j)=Z^T\cdot\underline A^\mathcal N\cdot Z=\sum_{q=1}^6\theta^q(\mu)Z^T\cdot\underline A^{\mathcal Nq}\cdot Z$$
+
+where $\varphi_i$ denotes the $i$th FEM basis function. This yields the following two decompositions :
+
+$$\underline A^\mathcal N(\mu)=\sum_{q=1}^6\theta^q(\mu)\underline A^{\mathcal Nq}\text{ and }\underline A_N(\mu)=\sum_{q=1}^6\theta^q(\mu)\underline A_N^q.$$
+
+\paragraph{(e)}Let $\bar\mu\in\mathcal D$ be a fixed parameter. We endow $X^e$ with the subsequent inner product : $(\bu,\bv)_{X^e}=a(\bu,\bv;\bar\mu)$ and the associated norm $\|\cdot\|_{X^e}:\bv\in X^e\mapsto\sqrt{(\bv,\bv)_{X^e}}$. We now suppose the basis $(\xi_i)_{i=1,...,N}$ is orthonormalized with respect to this inner product. Note that it is not necessarily orthonormal with respect to another inner product $a(\cdot,\cdot;\mu),~\mu\neq\bar\mu$.
+
+The condition number of a matrix is the quotient of its largest eigenvalue by its least one. Assume we have $\underline A_N(\mu)$'s eigenvalues $\lambda_1\geqslant...\geqslant\lambda_N$ sorted in decreasing order. Thus we have :
+
+$$\text{cond}(\underline A_N(\mu))=\frac{\lambda_1}{\lambda_N}$$
+\newpage
+Since $W_N\simeq\R^N$, the least and the largest eigenvalues verify :
+
+$$\lambda_N(\mu)=\inf_{\bv_N\in W_N}\frac{\underline\bv_N^T\cdot\underline A_N(\mu)\cdot\underline\bv_N}{\underline\bv_N^T\cdot\underline\bv_N}~\text{ and }~\lambda_1(\mu)=\sup_{\bv_N\in W_N}\frac{\underline\bv_N^T\cdot\underline A_N(\mu)\cdot\underline\bv_N}{\underline\bv_N^T\cdot\underline\bv_N}$$
+
+On the other hand, the continuity and the coercivity constants are defined by similar quotients, namely :
+
+$$\gamma(\mu)=\sup_{\bv,\bw\in X^e}\frac{a(\bv,\bw;\mu)}{\|\bv\|_{X^e}\|\bw\|_{X^e}}~\text{ and }~\alpha(\mu)=\inf_{\bv\in X^e}\frac{a(\bv,\bv;\mu)}{\|\bv\|^2_{X^e}}$$
+
+Let us compute :
+
+$$\begin{array}{rll}
+\alpha(\mu)=&\displaystyle\inf_{\bv\in X^e}\frac{a(\bv,\bv;\mu)}{\|\bv\|_{X^e}}&\\
+&&\\
+\leqslant&\displaystyle\inf_{\bv_N\in W_N}\frac{a(\bv_N,\bv_N;\mu)}{\|\bv_N\|_{X^e}^2}&\text{ since }W_N\subset X^e\\
+&&\\
+=&\displaystyle\inf_{\bv_N\in W_N}\frac{\underline\bv_N^T\cdot\underline A_N(\mu)\cdot\underline\bv_N}{\sum_{i,j=1}^N\underline\bv_N^i\underline\bv_N^j(\xi^i,\xi_j)}\\
+&&\\
+=&\displaystyle\inf_{\bv_N\in W_N}\frac{\underline\bv_N^T\cdot\underline A_N(\mu)\cdot\underline\bv_N}{\underline\bv_N^T\cdot\underline\bv_N}&\text{ since }(\xi_i)_{i=1,...,N}\text{ is orthonormal}\\
+&&\\
+=&\lambda_N(mu)&\\
+&&\\
+\gamma(\mu)=&\displaystyle\sup_{\bv,\bw\in X^e}\frac{a(\bv,\bw;\mu)}{\|\bv\|_{X^e}\|\bw\|_{X^e}}&\\
+&&\\
+\geqslant&\displaystyle\sup_{\bv_N,\bw_N\in W_N}\frac{a(\bv_N,\bw_N;\mu)}{\|\bv_N\|_{X^e}\|\bw_N\|_{X^e}}&\text{ since }W_N\subset X^e\\
+&&\\
+=&\displaystyle\sup_{\bv_N,\bw_N\in W_N}\frac{\underline\bv_N^T\cdot\underline A_N(\mu)\cdot\underline\bw_N}{\sqrt{\sum_{i,j=1}^N\underline\bv_N^i\underline\bv_N^j(\xi^i,\xi_j)}\sqrt{\sum_{i,j=1}^N\underline\bw_N^i\underline\bw_N^j(\xi^i,\xi_j)}}\\
+&&\\
+\geqslant&\displaystyle\sup_{\bv_N\in W_N}\frac{\underline\bv_N^T\cdot\underline A_N(\mu)\cdot\underline\bv_N}{\sum_{i,j=1}^N\underline\bv_N^i\underline\bv_N^j(\xi^i,\xi_j)}&\\
+&&\\
+=&\displaystyle\sup_{\bv_N\in W_N}\frac{\underline\bv_N^T\cdot\underline A_N(\mu)\cdot\underline\bv_N}{\underline\bv_N^T\cdot\underline\bv_N}&\text{ since }(\xi_i)_{i=1,...,N}\text{ is orthonormal}\\
+&&\\
+=&\lambda_1(\mu)&
+\end{array}$$
+
+Since $\lambda_1(\mu)\leqslant\gamma(\mu)$ and $\alpha(\mu)\leqslant\lambda_N(\mu)$, the following result is proved : $$\text{cond}(\underline A_N(\mu))=\frac{\lambda_1(\mu)}{\lambda_N(\mu)}\leqslant\frac{\gamma(\mu)}{\alpha(\mu)}.$$
 
 
 \end{document}
