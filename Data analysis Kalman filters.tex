@@ -209,7 +209,7 @@ Prédiction &$\x^f_{k+1} = A_k\cdot \x^a_k$\\
 
 
 \begin{figure}[!h]
-\includegraphics[width=\textwidth,trim = 3.5cm 18.1cm 3cm 3.5cm, clip]{kfchart.pdf}
+\includegraphics[width=\textwidth,trim = 3.5cm 18.1cm 3cm 3.5cm, clip]{Images/kfchart.pdf}
 \caption{Fonctionnement général du KF}
 \end{figure}
 
@@ -279,7 +279,7 @@ La figure 1 illustre les résultats obtenus pour la position et la vitesse d'un 
 
 
 \begin{figure}[!h]
-\includegraphics[width=\textwidth]{KalmanMobile.pdf}
+\includegraphics[width=\textwidth]{Images/KalmanMobile.pdf}
 \caption{En bleu : $\x$. ; en vert : $\y$ ; en rouge : $\x^a$ ; en cyan : $\x^f$.}
 \end{figure}
 
@@ -345,7 +345,7 @@ fin
 
 
 \begin{figure}
-\includegraphics[width=\textwidth,trim = 3.85cm 22.1cm 1.8cm 3.5cm, clip]{enkfchart.pdf}
+\includegraphics[width=\textwidth,trim = 3.85cm 22.1cm 1.8cm 3.5cm, clip]{Images/enkfchart.pdf}
 \caption{Fonctionnement du EnKF}
 \end{figure}
 
@@ -372,7 +372,7 @@ Dans l'exemple, nous avons arbitrairement pris $\varepsilon=dt$.
 
 
 \begin{figure}[!h]
-\includegraphics[width=\textwidth]{ENKalmanMobile.pdf}
+\includegraphics[width=\textwidth]{Images/ENKalmanMobile.pdf}
 \caption{En bleu : $\x$ ; en vert : $\y$ ; en rouge : $\overline{\x^f}$.}
 \end{figure}
 
@@ -463,13 +463,13 @@ $$C\frac d{dt}p+\frac p{R_2}=CR_1\frac d{dt}q+\left(1+\frac{R_1}{R_2}\right)q$$
 Taking Gerbeau's flow input (p26 of his beamer), we first tried to recover pressure from noised measurements, then to recover the prescribed flow using pressure measurements only, the parameters $R_1=1300\Omega,R_2=16000\Omega,C=0.000025F$ being known. The following graphs sum up the results in the cases $q_{ens}=10$ and $q_{ens}=1000$ : the top graph illustrates pressure estimation (real $p$ in blue, measurement in red, estimation in yellow) and the bottom graph illustrates flow estimation (real $q$ in blue, estimation in red).
 
 \begin{center}
-\includegraphics[width=\textwidth]{KFex1}
+\includegraphics[width=\textwidth]{Images/KFex1}
 \end{center}
 
 If $p$ is the real pressure, $y$ its measurement and $x$ its estimation based on $y$, we get a ratio (sum of $(p-y)^2$)/(sum of $(p-x)^2$) = $1.2242$ and a mean square difference between $q$ and its estimation of $1.136810^{-8}$.
 
 \begin{center}
-\includegraphics[width=\textwidth]{KFex2}
+\includegraphics[width=\textwidth]{Images/KFex2}
 \end{center}
 
 If $p$ is the real pressure, $y$ its measurement and $x$ its estimation based on $y$, we get a ratio (sum of $(p-y)^2$)/(sum of $(p-x)^2$) = $1.3005$ and a mean square difference between $q$ and its estimation of $2.1087e~10^
@@ -635,7 +635,7 @@ The states on which the benchmark was performed is a noised sinusoid like the fo
 % CreationDate: Thu Feb  8 16:51:31 2018
 \setlength{\unitlength}{1pt}
 \begin{picture}(0,0)
-\includegraphics{KFbenchmark-inc}
+\includegraphics{Images/KFbenchmark-inc}
 \end{picture}%
 \begin{picture}(576,432)(0,0)
 \fontsize{10}{0}
