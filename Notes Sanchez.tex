@@ -1,0 +1,182 @@
+\documentclass[a4paper]{article}
+
+\input{macro}
+
+\usepackage{listings}
+\lstset{
+	language=MatLab,
+	basicstyle=\color{black}\ttfamily,
+	breakatwhitespace=false,
+	breaklines=true,
+	keywordstyle=\color{blue}\ttfamily,
+	stringstyle=\color{red}\ttfamily,
+	commentstyle=\color{green}\ttfamily,
+	stepnumber=1,
+         numbers=left,
+	numberstyle=\tiny\color{black}
+}
+
+\begin{document}
+
+
+
+\begin{center}\Large\sc
+Application des techniques de bases réduites à la simulation des écoulements en milieux poreux
+
+
+\large-
+ 
+
+R. Sanchez\end{center}
+
+\bigskip
+
+This thesis is about MOR methods, especially RBM, applied to (diphasic) flows through porous media. It begins with a state of the art of MOR methods and derives exact and reduced models for diphasic flows. The first two chapters motivate and describe the problematic and its model. The whole third chapter is devoluted to RBM and \emph{a posteriori} error bounds. The fourth and fifth ones are about sharp order reduction and cheap approximations. The sixth chapter describes the POD method, and the last chapter exposes results and concludes.
+
+
+The main principles of this work are :
+\begin{enumerate}
+\item a clever reduction of the number of parameters,
+\item an optimal ballance between accuracy and cost,
+\item the use of approximated models to call the simulator the least posible times.
+\end{enumerate}
+
+
+According to R. Sanchez, Rozza described in 2005 a simpler alternative to SCM  and Quarteroni builds a more general method (non-coercive, -affine, -compliant case) for error bounds.
+
+
+It is mentioned that the RBM ''traditionally'' supposes the symmetry of the bilinear form $a$, but it is not required ; the only convenient consequence is the existence of an energy function.
+
+\bigskip
+
+\begin{center}\rule{6cm}{0.2pt}\end{center}
+
+\bigskip
+
+\paragraph{Discrete Empirical Interpolation Method (DEIM)}~
+
+
+\bigskip
+
+Suppose we want to solve a FEM problem in the form :
+
+$$a^\mathcal N(u,v;\mu)=f^\mathcal N(v;\mu)$$
+
+where $\mathcal N$ denotes the FEM space dimension. Moreover, suppose the bilinear and linear parametrical forms $a^\mathcal N$ and $f^\mathcal N$ do not have affine decompositions. To perform RB approximations, we need to approximate these forms with affine-decomposable ones. According to R. Sanchez, this is the point of the DEIM.
+
+
+\bigskip
+
+\begin{center}\rule{6cm}{0.2pt}\end{center}
+
+\bigskip
+
+%
+\newcommand{\by}{\mathbf y}
+\newcommand{\bu}{\mathbf u}
+\newcommand{\bA}{\mathbf A}
+\newcommand{\bU}{\mathbf U}
+\newcommand{\bff}{\mathbf f}
+\newcommand{\bF}{\mathbf F}
+%
+
+
+\begin{center}\Large\sc
+Nonlinear model reduction via discrete empirical interpolation
+
+
+\large-
+
+
+Saifon Chaturantabut, Danny C. Sorensen
+\end{center}
+
+\bigskip
+
+Suppose we put a PDE in the form of a problem of order $\mathcal N$ :
+
+$$0=\bA\by(\mu)+\bF(\by(\mu))$$
+
+where $\mu\in\mathcal D\subset\R^p$ is a parameter vector, $\bA$ is a $\mathcal N\times\mathcal N$ matrix and $\bF:\mathcal D\to\R^\mathcal N$ a nonlinear componentwise function :
+
+$$\bF(x)=\left(F(x_1),...,F(x_\mathcal N)\right)^T$$
+
+We want to reduce thus problem's order down to $M<<\mathcal N$. If $Z_N$ is a $\mathcal N\times N$ matrix whose orthonormal columns are the reduced basis, we can rewrite :
+
+$$0 = Z_N^T\bA Z_N\by_N(\mu)+Z_N^T\bF(Z_N\by(\mu))$$
+
+The DEIM efficiency is closely bound to the choice of $Z_N$. One can show the optimal choice is the POD basis.
+Since $\bF$ is nonlinear, it will always be costly ($\mathcal O(\alpha(\mathcal N)+2\mathcal N^2N+2\mathcal NN^2+2\mathcal NN)$ if it is dense) to compute the Jacobian of $\bF$ :
+
+$$J_\bF^N(\by_N(\mu))=Z_N^TJ_\bF(Z_N\by_N(\mu))Z_N$$
+
+We will approximate the nonlinear terms by projecting them onto a subspace $\mathcal U_M$ of dimension $M<<\mathcal N$.
+Let us denote $\bF(Z_N\by_N(\mu))$ by $\bff(\mu)$. Let $(u_1,...,u_M)$ be a basis for $\mathcal \bU_M$. Then :
+
+$$\bff(\mu)\simeq \bU_M\mathbf c(\mu)$$
+
+\noindent where $\bU_M=(\bu_1,...,\bu_M)$ is a $\mathcal N\times M$ matrix and $\mathbf c(\mu)$ is a suitable coefficient vector. Consider $P=(e_{i_1},...,e_{i_M})\in\R^{\mathcal N\times M}$, with $e_i$ being the $i$th vector from the canonical basis of $\R^\mathcal N$. If $P^T\bU_M$ is nonsingular, the coefficient vector is uniquely determined and can be computed :
+
+$$P^T\bff(\mu)=(P^T\bU_M)\mathbf c(\mu)$$
+
+Here, $P$ is meant to select the dominant rows of $\bU$. The interpolation indices $i_k$ determining $\mathbf c(\mu)$ are computed by the following algorithm in MatLab code.
+
+\medskip
+
+\textsc{DEIM Algorithm}
+
+
+Given $\bU_M$ nonsingular whose $i$th column is saved in a database's entry \verb basis{i} .
+\begin{lstlisting}
+function p = DEIM(basis)
+    N = length(basis{1});
+    [~,M] = size(basis);
+
+    [a,b] = max(abs(basis{1}));
+    U = basis{1};
+    P = zeros(N,1);
+    P(b) = 1;
+    p = b;
+
+    for l = 1:M
+        c = (P'*U) \ P'*basis{l};
+        r = basis{l} - U*c;
+        [a,b] = max(abs(r));
+        U(:,l) = basis{l};
+        P(:,l) = zeros(N,1);
+        P(b,l) = 1;
+        p(l) = b;
+    end
+end
+\end{lstlisting}
+
+\bigskip
+
+One can show the optimal basis for $\mathcal U_M$ is built from the POD of order $M$ applied to a well-chosen set of snapshots $\bff(\mu_i)$, $i=1,...,M$. The output informs us on which entries of $\bff(\mu)$ have to be computed in order to best approximate it.
+
+
+To choose the $M$ snapshots conveniently, we just run greedy algorithm on a fine discrete sampling of $\mathcal D$.
+
+
+\bigskip
+
+\paragraph{Propoer Orthogonal Decomposition (POD)}~
+
+
+\bigskip
+
+
+Let $\by_1,...,\by_n$ be a family of vectors from $\R^\mathcal N$, and let $\mathcal Y$ be the sub-vector space spanned by this family. A $POD$ basis of order $M$ for $\mathcal Y$, $1\leq M\leq dim\mathcal Y$, is a basis $(\phi_i)_{i=1,...,M}$, such that the following quantity is minimal :
+
+$$\sum_{i=1}^n\left\|\by_i-\sum_{j=1}^M(\by_i^T\cdot\phi_j)\phi_j\right\|^2_2$$
+
+We can achieve this minimum by taking the unitary 2-norm eigenvectors associated to the $M$ largest eigenvalues of the matrix :
+
+$$\mathbf Y=\left(\begin{matrix}&&\\\by_1&...&\by_M\\&&\end{matrix}\right)$$
+
+\noindent and it is equal to the sum of squares of the $rank(\mathbf Y)-M$ least eigenvalues of $\mathbf Y$.
+
+
+
+
+\end{document}

@@ -25,6 +25,7 @@
 \newcounter{d}
 \newcounter{r}
 \newcounter{e}
+\newcounter{sujet}
 
 \newcommand{\defi}{\subparagraph{D\'efinition \arabic{c}.\arabic{d} :}\stepcounter{d}}
 \newcommand{\prop}{\subparagraph{Proposition \arabic{c}.\arabic{r} :}\stepcounter{r}}
@@ -33,7 +34,7 @@
 \newcommand{\cor}{\subparagraph{Corollaire \arabic{c}.\arabic{r} :}\stepcounter{r}}
 \newcommand{\lem}{\subparagraph{Lemme \arabic{c}.\arabic{r} :}\stepcounter{r}}
 \newcommand{\rem}{\subparagraph{Remarque :}}
-\newcommand{\chapitre}[1]{\stepcounter{c}\setcounter{e}{0}\setcounter{d}{0}\setcounter{r}{0}\bigskip\noindent\textbf{\Large\Roman{c} - #1}\\}
+\newcommand{\chapitre}[1]{\stepcounter{c}\setcounter{e}{0}\setcounter{d}{0}\setcounter{r}{0}\bigskip\noindent\textbf{\Large\arabic{sujet}.\Roman{c} - #1}\\}
 \newcommand{\eq}[1]{\stepcounter{e}\begin{equation}#1\tag{\arabic{c}.\arabic{e}}\end{equation}}
 
 % Notations
@@ -72,7 +73,7 @@
 \newcommand{\saut}{\vspace{0.5em}}
 
 \begin{document}
-
+\stepcounter{sujet}
 %\maketitle
 
 \begin{center}\huge Thermal fin\end{center}
@@ -234,7 +235,7 @@ $$a(\bw,\bv;\mu)=\sum_{q=1}^6\theta^q(\mu)a^q(\bw,\bv)~,~\forall\bw,\bv\in X,~\f
 
 We now build the matrices $\underline A^{\mathcal Nq}\in\mat{\mathcal N}{\mathcal N}$ and $\underline A^q_N\in\mat NN$ whose coefficients are :
 
-$$\underline A^{\mathcal Nq}_{ij}=a^q(\varphi_i,\varphi_j)\text{ and }\underline A^q_{Nij}=a^q(\xi_i,\xi_j)=Z^T\cdot\underline A^\mathcal N\cdot Z=\sum_{q=1}^6\theta^q(\mu)Z^T\cdot\underline A^{\mathcal Nq}\cdot Z$$
+$$\underline A^{\mathcal Nq}_{ij}=a^q(\varphi_i,\varphi_j)\text{ and }\underline A^q_N=(\underline A^q_{Nij})_{ij}=(a^q(\xi_i,\xi_j))_{ij}=Z^T\cdot\underline A^\mathcal N\cdot Z=\sum_{q=1}^6\theta^q(\mu)Z^T\cdot\underline A^{\mathcal Nq}\cdot Z$$
 
 where $\varphi_i$ denotes the $i$th FEM basis function. This yields the following two decompositions :
 
@@ -281,6 +282,62 @@ $$\begin{array}{rll}
 \end{array}$$
 
 Since $\lambda_1(\mu)\leqslant\gamma(\mu)$ and $\alpha(\mu)\leqslant\lambda_N(\mu)$, the following result is proved : $$\text{cond}(\underline A_N(\mu))=\frac{\lambda_1(\mu)}{\lambda_N(\mu)}\leqslant\frac{\gamma(\mu)}{\alpha(\mu)}.$$
+
+
+
+\newpage
+% Sujet 2
+\stepcounter{sujet}
+\setcounter{c}{0}
+
+\chapitre{Reduced basis approximation}
+
+\paragraph{1 (a)}During the online process, we have to :
+\begin{itemize}
+\item build $A_N(\mu) = \displaystyle\sum_{q=1}^{Q_a}\theta_q(\mu)A_n^q\rightsquigarrow Q_a\times N^2$ products,
+\item solve linear system associated with $A_N(\mu)\rightsquigarrow\mathcal N^3$ with Gauss' method,
+\item compute $T_{root N}(\mu) = L_N^T\cdot \bu_N(\mu)\rightsquigarrow N$ products.
+\end{itemize}
+
+The complexity is of order $Q_aN^2+N^3+N$. It is clear that it does not depend on $\mathcal N$.
+
+\paragraph{(b) (1)}In MatLab, our parameter array will look like {\tt(1,mu,mu,mu,mu,0.1)}.  For a sample size $N=8$, we have the following condition numbers : \begin{center}\begin{tabular}{|c|c|c|}\hline& not ortho.&ortho.\\\hline$\mu=1$&$2.7527~10^{11}$&$1$\\\hline$\mu=10$&$1.3465~10^{11}$&$9.9286$\\\hline\end{tabular}\end{center}
+
+If we do not orthonormalize $Z$, its $i$th component is $u(\mu_i)$ so in this representation, $u(\mu_1)=(1,0,...,0)\in\R^8$. The same phenomenon happens with each value of $q$ : $u(\mu_q)=e_q$ where $e_q$ denotes the $q$th canonical basis vector of $\R^8$.
+
+
+If we orthonormalize the basis of the RB space, we note the only non-zero component of $u(\mu_q)$ are the $q$ firsts. This comes from the construction of $\zeta_q$ as a linear combination of $u(\mu_l),~l=1,...,q$. The concatenation of these basis vectors will result in an upper triangular matrix.
+
+\paragraph{(2)} For $N=8$ and $\mu = (1,5~;~1,5~;~1,5~;~1,5~;~1~;~0,1)$, we find a $T_{root}\simeq  1,5310749539187338\simeq  1,53107$.
+
+
+\paragraph{(3)} Here we plot the maximum relative error between FE and RB soutions in energy norm (blue) and between FE and RB outputs (red) for $N=1,...,8$ commited amongst the set $\Xi_{test}=0.1:0.1:100$.
+\begin{center}
+\includegraphics[width=11cm,trim={0cm 0cm 0cm 0cm},clip]{max_rel_err.jpg}
+\end{center}
+
+
+\paragraph{(4)} The RBM online step is 18 to 24 times faster than the FEM on the problem we are studying.
+
+\begin{center}
+\includegraphics[width=11cm]{avg_times.jpg}
+\end{center}
+
+
+\paragraph{(5)} The first value of the relative output error below $0,01$ is the third one ($N=3$). This choice implies an online step running about 20 times faster in RBM.
+
+
+\paragraph{(6)}  The energy and output relative errors do not seem to depend on $\mathcal N$. However, the gain in computation time is significantly affected  by $\mathcal N$. The ratio $T_{RB}/T_{FE}$ is about 50 in the medium case and about 140 in the fine case.
+
+\paragraph{(c) (1)} In this case, we compute $T_{root}=   1,515609953667211\simeq 1,51561$.
+
+\paragraph{(2)} We get the following maximum relative errors (as in \textbf{(b) (3)} with the same legend :
+
+\begin{center}
+\includegraphics[width=11cm,trim={0cm 0cm 0cm 0cm},clip]{max_rel_err2.jpg}
+\end{center}
+
+\paragraph{(3)} We find a minimal cost of $   1,465520469639620$ for the fourth entry of $\Xi_{test}$, that is $Bi=0.4$.
 
 
 \end{document}

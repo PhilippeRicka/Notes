@@ -1,0 +1,93 @@
+\documentclass[a4paper]{article}
+
+\input{macro}
+
+\usepackage{listings}
+\lstset{
+	language=MatLab,
+	basicstyle=\color{black}\ttfamily,
+	breakatwhitespace=false,
+	breaklines=true,
+	keywordstyle=\color{blue}\ttfamily,
+	stringstyle=\color{red}\ttfamily,
+	commentstyle=\color{green}\ttfamily,
+	stepnumber=1,
+         numbers=left,
+	numberstyle=\tiny\color{black}
+}
+
+\begin{document}
+
+\begin{center}\Large\bf RBM\end{center}
+
+\paragraph{FEM background}~
+
+
+Let $X$ be a function Hilbert space such that $H_0^1(\Omega)\subset X\subset H^1(\Omega)$, with $\Omega$ a domain in $\R^d$, d=1,2,3, endowed with an inner product $(\cdot,\cdot)_X$ and the subsequent norm $\|\cdot\|_X$. Given a parametric bilinear form $a(\cdot,\cdot;\cdot):X\times X\times\mathcal D\to\R$ and a parametric linear form $f:X\times\mathcal D\to\R$, we want to find $u\in X$ such that for all $v\in X$ and a fixed $\mu\in\mathcal D$ :
+
+$$a(u,v;\mu)=f(v;\mu)$$
+
+\noindent In many cases, we want to compute an output quantity $s(\mu)=l(u)$ where $u\in X$ is the solution of the previous problem for the prescribed $\mu$ and $l$ is a linear functional. Whenever $l(u)=f(u;\mu)$, we say the problem is \emph{compliant}.
+
+
+The point of FEM is to discretize $\Omega$ and define a FE solution as its nodal values. It follows that the solution we are looking for lives in an $\mathcal N$ dimensional space $X^\mathcal N$. Let $\left(\phi_i\right)_{i=1,...,\mathcal N}$ be a basis of the FEM space $X^\mathcal N$. We build the matrices :
+
+$$A^\mathcal N(\mu)=(a(\phi_i,\phi_j;\mu))_{i,j=1,...,\mathcal N}$$
+$$F^\mathcal N(\mu)=(f(\phi_i;\mu))_{i=1,...,\mathcal N}$$
+$$L^\mathcal N(\mu)=(l(\phi_i;\mu))_{i=1,...,\mathcal N}$$
+
+\noindent It follows we just have to solve the linear system :
+
+$$\left(A^\mathcal N(\mu)\right)^T\underline{u}^\mathcal N=F^\mathcal N(\mu)$$
+
+\noindent where obviously $\underline u^\mathcal N\in\R^\mathcal N$ is the vector representing $u^\mathcal N\subset X^\mathcal N$ in the basis $\left(\phi_i\right)_{i=1,...,\mathcal N}$.
+
+
+This method can be quite expensive if we wish to compute $\underline u^\mathcal N$ for several values of $\mu$. The idea is to reduce our model's order.
+
+\paragraph{RBM}~
+
+Let $S_N\subset\mathcal D$ be a set of $N<<\mathcal N$ parameters. We can choose $S_N$ built thanks to a greedy algorithm fed with a fine sampling of $\mathcal D$ and a suitable approximation error upper bound functional $\Delta$. This is not the only possibility.
+
+
+We compute $W_N=\{\underline u^\mathcal N\}_{i=1,...,N}$ and apply the Gram-Schmidt orthonormalization procedure resulting in a basis $\left(\xi_i\right)_{i=1,...,N}$ for our RB space $X^N=\text{span}\left(W_N\right)$. We now build the matrix $Z_N$ by packing the basis vectors $\xi_i$ together and set :
+
+$$A^N(\mu)=Z_N^TA^\mathcal N(\mu)Z_N$$
+$$F^N(\mu)=Z_N^TF^\mathcal N(\mu)$$
+$$L^N(\mu)=Z_N^TL^\mathcal N(\mu)$$
+
+This yields the RB problem :
+
+$$\left(A^N(\mu)\right)^T\underline u^N=F^N(\mu)$$
+
+\noindent where $\underline u^N\in\R^N$ is the vector representing our solution $u^N$ in the basis $W_N$. We hope $u^N$ is a sufficient approximation of $u$ for a parameter domain of interest within $\mathcal D$.
+
+
+Suppose $a(\cdot,\cdot;\mu)$ is positive definite and let $\vertiii\cdot_\mu$ be the energy norm defined by :
+
+$$\vertiii u_\mu^2=a(u,u;\mu)$$
+
+\newpage
+\noindent We have the following optimality results :
+
+$$\vertiii{u-u^N}_\mu=\inf_{w^N\in X^N}\vertiii{u-w^N}_\mu$$
+$$\|u-u^N\|_X\leq\sqrt{\frac{\gamma(\mu)}{\alpha(\mu)}}\inf_{w^N\in X^N}\|u-w^N\|_X$$
+
+\bigskip
+
+When the bilinear form $a$ admits an affine decomposition, we can quicken the computations with a suitable offline/online strategy. Suppose we can write :
+
+$$a(u,v;\mu)=\sum_{q=1}^{Q_a}\theta^q_a(\mu)a^q(u,v)$$
+$$f(v;\mu)=\sum_{q=1}^{Q_f}\theta^q_f(\mu)f^q(v)$$
+
+The point is to compute the matrices $A^q=\left(a(\xi_i,\xi_j)\right)_{i,j=1,...,N}$ and $F^q=\left(f^q(\xi_i)\right)_{i=1,...,N}$ offline and to store them. Solving the system now reduces to the calculation of the $\theta$ coefficients. The corresponding FEM solution can be rebuilt easily : $Z_N\underline u^N$.
+
+
+Moreover, if $a(\cdot,\cdot;\mu)$ is continuous and coercive for all $\mu$ with corresponding coefficients $\gamma(\mu)$ and $\alpha(\mu)$, we have an upper bound for the condition number of $A^N(\mu)$ (related to the error propagation) :
+
+$$\text{cond}\left(A^N(\mu)\right)\leq\frac{\gamma(\mu)}{\alpha(\mu)}$$
+
+It can be proven and experimentally shown that the online step does not depend on $\mathcal N$.
+
+
+\end{document}
